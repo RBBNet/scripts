@@ -1,0 +1,3 @@
+validator@localhost:8545
+boot@localhost:8544
+writer@localhost:8546
