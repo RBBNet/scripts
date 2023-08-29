@@ -19,25 +19,18 @@ Este roteiro tem como objetivo explicar como rodar cada script disponível, este
   
   ```
 
-## 2 - Escolhendo Scripts
+## 2 - Consultas API Besu
 
-Execute o comando abaixo para acessar o diretório do script escolhido. 
+Execute o comando abaixo para acessar o diretório Consultas API Besu: 
 
 ```bash
-cd <script_escolhido>
+cd Consultas API Besu
 
 ```
 
-Por exemplo:
+Daqui para frente, considere que todos os comandos deverão ser executados dentro do diretório Consultas API Besu.
 
-```bash
-cd admin_peers
-
-```
- 
-Daqui para frente, considere que todos os comandos deverão ser executados dentro do diretório escolhido.
-
-### 2.1 `admin_peers`
+## 3 - Scripts
 
 - Execute o seguinte comando para instalar as dependências:
 
@@ -52,5 +45,17 @@ yarn install
 
 ```bash
 npm install
+
+```
+
+ ⚠️ **Atenção!** Verifique se o tunelamento dos nós estão abertos!!!
+
+
+### 3.1 `admin_peers` (atualmente como `conexoes`)
+
+- Execute o seguinte comando para rodar o script `admin_peers`:
+
+```bash
+node conexoes.js
 
 ```
