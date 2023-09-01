@@ -28,6 +28,8 @@ cd Consultas API Besu
 
 ```
 
+-  ⚠️ **Atenção!** Antes de executar qualquer script, baixe o `enodes.md` e adicione dentro desta pasta.
+
 Daqui para frente, considere que todos os comandos deverão ser executados dentro do diretório Consultas API Besu.
 
 ## 3 - Scripts
