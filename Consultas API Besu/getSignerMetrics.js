@@ -25,13 +25,12 @@ async function main() {
 
   // Filtrar a saída pela chave 'address' e substituir pelo nome da instituição
   if (rpcData && Array.isArray(rpcData)) {
-    const filteredData = rpcData.map(data => {
-      const address = data.address;
-      return accountToInstituicao[address] || address;
-    });
-  
-    // Imprimindo a saída
-const asciiArt = `
+  const filteredData = rpcData.map(data => {
+    const address = data.address;
+    return accountToInstituicao[address] || address;
+  }).sort();  // Sort the data alphabetically
+
+  const asciiArt = `
              _    _____ _                       __  __      _        _          
             | |  / ____(_)                     |  \\/  |    | |      (_)         
    __ _  ___| |_| (___  _  __ _ _ __   ___ _ __| \\  / | ___| |_ _ __ _  ___ ___ 
@@ -40,15 +39,18 @@ const asciiArt = `
   \\__, |\\___|\\__|_____/|_|\\__, |_| |_|\\___|_|  |_|  |_|\\___|\\__|_|  |_|\\___|___/
    __/ |                   __/ |                                                
   |___/                   |___/                                                 
-`;
+  `;
 
+  const lineCount = filteredData.length;  // Get the line count
 
-
-
+  // Add the line count at the end
   const output = [
     asciiArt,
+    validatorNode.nodeName,
     '=====================================================',
-    ...filteredData
+    ...filteredData,
+    '',  // Skip a line
+    `== ${lineCount} Peers ==`  // Add the line count here
   ].join('\n');
 
   console.log(output);
