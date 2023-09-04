@@ -51,12 +51,21 @@ npm install
  ⚠️ **Atenção!** Verifique se o tunelamento dos nós estão abertos antes de exercutar qualquer script!!!
 
 
-### 2.1 `admin_peers` (atualmente como `conexoes`)
+### 2.1 `adminPeers`
 
-- Execute o seguinte comando para rodar o script `admin_peers`:
+- Execute o seguinte comando para rodar o script `adminPeers`:
 
 ```bash
-node conexoes.js
+node adminPeers.js
+
+```
+
+### 2.2 `SignerMetrics`
+
+- Execute o seguinte comando para rodar o script `SignerMetrics`:
+
+```bash
+node getSignerMetrics.js
 
 ```
 
