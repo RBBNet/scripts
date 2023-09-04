@@ -1,5 +1,6 @@
 # Script com permissionamento (2 validators)
 # baixa o diretório
+{
 projectname="NomeDoProjeto"
 branch="-b NomeDaBranch"
 git clone https://github.com/RBBNet/start-network.git
@@ -67,3 +68,4 @@ docker-compose restart validator1 validator2
 
 
 docker-compose logs -f
+}
