@@ -39,10 +39,15 @@ docker-compose up -d validator1 validator2
 
 
 
-
-# ---------------------------------
 # permissionamento
 cd ..
+
+# Garantia de que será usado o node 16
+nvm install 16
+nvm use 16
+npm i --global yarn
+# ---- - - - -
+
 git clone https://github.com/RBBNet/Permissionamento.git $(echo $branch)
 cd Permissionamento
 yarn install
