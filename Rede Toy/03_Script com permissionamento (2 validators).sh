@@ -3,16 +3,27 @@
 {
 projectname="NomeDoProjeto"
 branch="-b NomeDaBranch"
+
+PortaBoot="10071"
+PortaValidator1="10072"
+PortaValidator2="10073"
+PortaWriter="10074"
+
+
+
+
+
+
 git clone https://github.com/RBBNet/start-network.git
 mv start-network $projectname
 cd $projectname
 # cria os nós especificados.
 ./rbb-cli node create validator1, boot, writer , validator2
 # define as portas do container
-./rbb-cli config set nodes.validator1.ports+=[\"10070:8545\"]
-./rbb-cli config set nodes.boot.ports+=[\"10071:8545\"]
-./rbb-cli config set nodes.writer.ports+=[\"10072:8545\"]
-./rbb-cli config set nodes.validator2.ports+=[\"10073:8545\"]
+./rbb-cli config set nodes.boot.ports+=[\"$(echo $PortaBoot):8545\"]
+./rbb-cli config set nodes.validator1.ports+=[\"$(echo $PortaValidator1):8545\"]
+./rbb-cli config set nodes.validator2.ports+=[\"$(echo $PortaValidator2):8545\"]
+./rbb-cli config set nodes.writer.ports+=[\"$(echo $PortaWriter):8545\"]
 # cria o genesis
 ./rbb-cli genesis create --validators validator1,validator2
 # desabilita o discovery nos nós especificados 
