@@ -9,22 +9,22 @@ Este roteiro tem como objetivo explicar como rodar cada script disponível, este
 - Yarn
 - Node.js
 
-### 1.2 - Baixar o repositório `Scripts`
+### 1.2 - Baixar o repositório `scripts`
 
 - Execute os seguintes comandos:
 
   ```bash
   git clone https://github.com/RBBNet/Scripts.git
-  cd Scripts
+  cd scripts
   
   ```
 
 ## 2 - Consultas API Besu
 
-- Execute o comando abaixo para acessar o diretório Consultas API Besu: 
+- Execute o comando abaixo para acessar o diretório consultas_api_besu: 
 
 ```bash
-cd Consultas API Besu
+cd consultas_api_besu
 
 ```
 
@@ -50,8 +50,22 @@ npm install
 
  ⚠️ **Atenção!** Verifique se o tunelamento dos nós estão abertos antes de exercutar qualquer script!!!
 
+ ⚠️ **Atenção!** Neste capítulo 2, rode todos os comandos em ambiente Windows(CMD)!!!
 
-### 2.1 `adminPeers`
+### 2.3 `Dashboard`
+
+Um Dashboard que contém os script `adminPeers` e `getSignerMetrics` em conjunto.
+
+-  Execute o seguinte comando para rodar o Dashboard:
+
+```bash
+auto.bat
+
+```
+
+ou caso preferir, rode cada script separado a seguir:
+
+### 2.2 `adminPeers`
 
 - Execute o seguinte comando para rodar o script `adminPeers`:
 
@@ -60,7 +74,7 @@ node adminPeers.js
 
 ```
 
-### 2.2 `SignerMetrics`
+### 2.1 `SignerMetrics`
 
 - Execute o seguinte comando para rodar o script `SignerMetrics`:
 
@@ -71,10 +85,10 @@ node getSignerMetrics.js
 
 ## 3 - Rede Toy
 
-- Execute o comando abaixo para acessar o diretório Rede Toy: 
+- Execute o comando abaixo para acessar o diretório rede_toy: 
 
 ```bash
-cd Rede Toy
+cd rede_toy
 
 ```
 
