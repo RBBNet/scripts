@@ -83,7 +83,7 @@ node getSignerMetrics.js
 
 ```
 
-## 3 - Rede Toy
+## 3 - Rede Toy [EM CONSTRUÇÃO]
 
 - Execute o comando abaixo para acessar o diretório rede_toy: 
 
