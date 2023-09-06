@@ -43,6 +43,7 @@ docker-compose up -d validator
 cd ..
 
 # Garantia de que será usado o node 16
+. $NVM_DIR/nvm.sh
 nvm install 16
 nvm use 16
 npm i --global yarn
