@@ -95,9 +95,7 @@ node getSignerMetrics.js
 
 ```
 
-## 3 - Rede Toy [EM CONSTRUÇÃO]
-
-⚠️ **Atenção!** Verifique se está usando o Node v16+ para qualquer sript!!!
+## 3 - Rede Toy
 
 ⚠️ **Atenção!** Neste capítulo 3, rode todos os comandos em ambiente Linux!!!
 
