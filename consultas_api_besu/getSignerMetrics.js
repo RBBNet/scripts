@@ -46,6 +46,8 @@ async function main() {
   // Add the line count at the end
   const output = [
     asciiArt,
+    'Last 100 blocks...',
+    '',
     validatorNode.nodeName,
     '=====================================================',
     ...filteredData,

@@ -76,7 +76,7 @@ async function makeRpcCall_signerMetrics(host, port, method, params = []) {
     const response = await axios.post(url, {
       jsonrpc: '2.0',
       method: method,
-      params: ["1", "latest"],
+      params: ["1"],
       id: 1,
     });
     return response.data.result;
