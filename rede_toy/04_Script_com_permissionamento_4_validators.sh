@@ -2,7 +2,6 @@
 # baixa o diretório
 {
 projectname="Teste4Validators"
-branch_do_Permissionamento="-b V1-backend-migration"
 
 PortaBoot="10071"
 PortaValidator1="10070"
@@ -17,7 +16,7 @@ PortaWriter="10072"
 
 
 
-git clone https://github.com/RBBNet/start-network.git
+curl -#SL https://github.com/RBBNet/start-network/releases/download/v0.4.0-permv1/start-network.tar.gz | tar xz
 mv start-network $projectname
 cd $projectname
 # cria os nós especificados.
@@ -81,14 +80,7 @@ docker-compose up -d validator1 validator2 validator3 validator4 boot writer
 # permissionamento
 cd ..
 
-# Garantia de que será usado o node 16
-. $NVM_DIR/nvm.sh
-nvm install 16
-nvm use 16
-npm i --global yarn
-# ---- - - - -
-
-git clone https://github.com/RBBNet/Permissionamento.git $(echo $branch_do_Permissionamento)
+curl -#SL https://github.com/RBBNet/Permissionamento/releases/download/v1.0.1%2Bmigrations/Permissionamento.tar.gz | tar xz
 cd Permissionamento
 yarn install
 yarn linuxcompiler
