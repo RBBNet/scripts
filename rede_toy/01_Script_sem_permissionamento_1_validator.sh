@@ -7,7 +7,9 @@ PortaValidator="10072"
 PortaWriter="10073"
 
 
-
+echo "Dica:"
+echo "Utilize portas que não estão em uso"
+sleep 4
 
 git clone https://github.com/RBBNet/start-network.git
 mv start-network $projectname
