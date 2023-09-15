@@ -13,6 +13,9 @@ PortaWriter="10074"
 
 
 
+echo "Dica: Usar o node a partir da versão 16"
+sleep 3
+
 curl -#SL https://github.com/RBBNet/start-network/releases/download/v0.4.0-permv1/start-network.tar.gz | tar xz
 mv start-network $projectname
 cd $projectname
