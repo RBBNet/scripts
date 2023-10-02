@@ -2,23 +2,23 @@
 
 Este roteiro tem como objetivo explicar como rodar cada script disponível.
 
-Primeiramente começarei explicando cada seção:
+Primeiramente, começarei explicando cada seção:
 
 ### **Seção 1 - Preparação**
 
-- Nesta seção irá encontrar os pré-requisitos para executar qualquer script deste repositório, tal como os comandos para baixa-lo tanto para Windows quanto para Linux.
+- Nesta seção irá encontrar os pré-requisitos para executar qualquer script deste repositório, tal como os comandos para baixá-lo tanto para Windows quanto para Linux.
 
 ### **Seção 2 - Consultas API BESU** (Deve ser executado em Ambiente Windows)
 
 - Nesta seção irá encontrar o roteiro para consultas da rede lab, como por exemplo o `AdminPeers`, que retorna informações de rede sobre nós remotos conectados.
 
-Atente-se aos avisos, eles contém o símbolo ⚠️ em seu início. 
+Atente-se aos avisos, eles contêm o símbolo ⚠️ em seu início. 
 
 ### **Seção 3 - Rede Toy** (Deve ser executado em Ambiente Linux)
 
 - Nesta seção irá encontrar o roteiro para subir uma rede toy com quantidades de Validator diferentes, como por exemplo o `Script com permissionamento (2 validators)`, que levanta uma rede toy com 2 validators e permissionamento.
 
-Atente-se aos avisos, eles contém o símbolo ⚠️ em seu início. 
+Atente-se aos avisos, eles contêm o símbolo ⚠️ em seu início. 
 
 ## 1 - Preparação
 
@@ -83,7 +83,7 @@ npm install
 
  ⚠️ **Atenção!** Verifique se o tunelamento dos nós estão abertos antes de exercutar qualquer script!!!
 
- ⚠️ **lembrete!** Nesta seção 2, rode todos os comandos em ambiente Windows(CMD)!!!
+ ⚠️ **lembrete!** Nesta seção 2, rode todos os comandos em ambiente Windows (CMD)!!!
 
 ### 2.3 `Dashboard`
 
@@ -96,7 +96,7 @@ auto.bat
 
 ```
 
-ou caso preferir, rode cada script separado a seguir:
+ou, caso preferir, rode cada script separado a seguir:
 
 ### 2.2 `adminPeers`
 
