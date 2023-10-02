@@ -1,6 +1,21 @@
 # Roteiro para rodar os scripts
 
-Este roteiro tem como objetivo explicar como rodar cada script disponível. Assume-se que estes serão executados em ambiente Windows. **Mas, no item 1.2, tem uma instrução que é para Linux!!!**
+Este roteiro tem como objetivo explicar como rodar cada script disponível.
+
+Assume-se que estes serão executados em ambiente Windows. **Mas, no item 1.2, tem uma instrução que é para Linux!!!**
+
+**Seção 1 - Preparação**
+
+Nesta seção irá encontrar os pré-requisitos para executar qualquer script deste repositório, tal como os comandos para baixa-lo tanto para Windows quanto para Linux.
+
+**Seção 2 - Consultas API BESU**
+
+Explicação
+
+**Seção 3 - Rede Toy**
+
+Explicação
+   
 
 **Tinha que explicar primeiro o que cada script faz, né?**
 
