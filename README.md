@@ -2,22 +2,23 @@
 
 Este roteiro tem como objetivo explicar como rodar cada script disponível.
 
-Assume-se que estes serão executados em ambiente Windows. **Mas, no item 1.2, tem uma instrução que é para Linux!!!**
+Primeiramente começarei explicando cada seção:
 
-**Seção 1 - Preparação**
+### **Seção 1 - Preparação**
 
-Nesta seção irá encontrar os pré-requisitos para executar qualquer script deste repositório, tal como os comandos para baixa-lo tanto para Windows quanto para Linux.
+- Nesta seção irá encontrar os pré-requisitos para executar qualquer script deste repositório, tal como os comandos para baixa-lo tanto para Windows quanto para Linux.
 
-**Seção 2 - Consultas API BESU**
+### **Seção 2 - Consultas API BESU** (Deve ser executado em Ambiente Windows)
 
-Explicação
+- Nesta seção irá encontrar o roteiro para consultas da rede lab, como por exemplo o `AdminPeers`, que retorna informações de rede sobre nós remotos conectados.
 
-**Seção 3 - Rede Toy**
+Atente-se aos avisos, eles contém o símbolo ⚠️ em seu início. 
 
-Explicação
-   
+### **Seção 3 - Rede Toy** (Deve ser executado em Ambiente Linux)
 
-**Tinha que explicar primeiro o que cada script faz, né?**
+- Nesta seção irá encontrar o roteiro para subir uma rede toy com quantidades de Validator diferentes, como por exemplo o `Script com permissionamento (2 validators)`, que levanta uma rede toy com 2 validators e permissionamento.
+
+Atente-se aos avisos, eles contém o símbolo ⚠️ em seu início. 
 
 ## 1 - Preparação
 
@@ -39,7 +40,7 @@ Explicação
 - Agora você deve descompactar e acessar a pasta que contém os scripts desejado
 
 #### Via Linux
-**Ué?! Mas não era só para Windows????**
+
 - Execute o seguinte comando:
 
 ```bash
@@ -58,7 +59,9 @@ cd consultas_api_besu
 
 ```
 
--  ⚠️ **Atenção!** Antes de executar qualquer script, baixe o `enodes.md` e adicione dentro desta pasta. **Seria bom explicar melhor onde fica o arquivo**
+-  ⚠️ **Atenção!** Antes de executar qualquer script, baixe o `enodes.md` e adicione dentro desta pasta. 
+
+(O arquivo `enodes.md` é encontrado na [RBBNet\participantes](https://github.com/RBBNet/participantes), dentro do repositório você escolhe o `enodes.md` de qual irá te atender melhor entre as pastas `lab` e `piloto`.)
 
 Daqui para frente, considere que todos os comandos deverão ser executados dentro do diretório Consultas API Besu.
 
@@ -80,7 +83,7 @@ npm install
 
  ⚠️ **Atenção!** Verifique se o tunelamento dos nós estão abertos antes de exercutar qualquer script!!!
 
- ⚠️ **Atenção!** Neste capítulo 2 **seção, né?**, rode todos os comandos em ambiente Windows(CMD)!!! **Você considerou que o sujeito pode baixar e instalar no Linux. Realmente, não entendi**
+ ⚠️ **lembrete!** Nesta seção 2, rode todos os comandos em ambiente Windows(CMD)!!!
 
 ### 2.3 `Dashboard`
 
@@ -115,7 +118,7 @@ node getSignerMetrics.js
 
 ## 3 - Rede Toy
 
-⚠️ **Atenção!** Neste capítulo 3, rode todos os comandos em ambiente Linux!!! **Tá querendo me confundir, né, não?**
+⚠️ **Atenção!** Neste capítulo 3, rode todos os comandos em ambiente Linux!!!
 
 - Execute o comando abaixo para acessar o diretório rede_toy: 
 
