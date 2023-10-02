@@ -1,6 +1,8 @@
 # Roteiro para rodar os scripts
 
-Este roteiro tem como objetivo explicar como rodar cada script disponível, este roteiro assume que serão rodados em ambiente Windows.
+Este roteiro tem como objetivo explicar como rodar cada script disponível. Assume-se que estes serão executados em ambiente Windows. **Mas, no item 1.2, tem uma instrução que é para Linux!!!**
+
+**Tinha que explicar primeiro o que cada script faz, né?**
 
 ## 1 - Preparação
 
@@ -22,6 +24,7 @@ Este roteiro tem como objetivo explicar como rodar cada script disponível, este
 - Agora você deve descompactar e acessar a pasta que contém os scripts desejado
 
 #### Via Linux
+**Ué?! Mas não era só para Windows????**
 - Execute o seguinte comando:
 
 ```bash
@@ -40,7 +43,7 @@ cd consultas_api_besu
 
 ```
 
--  ⚠️ **Atenção!** Antes de executar qualquer script, baixe o `enodes.md` e adicione dentro desta pasta.
+-  ⚠️ **Atenção!** Antes de executar qualquer script, baixe o `enodes.md` e adicione dentro desta pasta. **Seria bom explicar melhor onde fica o arquivo**
 
 Daqui para frente, considere que todos os comandos deverão ser executados dentro do diretório Consultas API Besu.
 
@@ -62,7 +65,7 @@ npm install
 
  ⚠️ **Atenção!** Verifique se o tunelamento dos nós estão abertos antes de exercutar qualquer script!!!
 
- ⚠️ **Atenção!** Neste capítulo 2, rode todos os comandos em ambiente Windows(CMD)!!!
+ ⚠️ **Atenção!** Neste capítulo 2 **seção, né?**, rode todos os comandos em ambiente Windows(CMD)!!! **Você considerou que o sujeito pode baixar e instalar no Linux. Realmente, não entendi**
 
 ### 2.3 `Dashboard`
 
@@ -97,7 +100,7 @@ node getSignerMetrics.js
 
 ## 3 - Rede Toy
 
-⚠️ **Atenção!** Neste capítulo 3, rode todos os comandos em ambiente Linux!!!
+⚠️ **Atenção!** Neste capítulo 3, rode todos os comandos em ambiente Linux!!! **Tá querendo me confundir, né, não?**
 
 - Execute o comando abaixo para acessar o diretório rede_toy: 
 
