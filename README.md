@@ -83,7 +83,7 @@ npm install
 
  ⚠️ **Atenção!** Verifique se o tunelamento dos nós estão abertos antes de exercutar qualquer script!!!
 
- ⚠️ **lembrete!** Nesta seção 2, rode todos os comandos em ambiente Windows (CMD)!!!
+ ⚠️ **lembrete!** Nesta Seção 2, rode todos os comandos em ambiente Windows (CMD)!!!
 
 ### 2.3 `Dashboard`
 
@@ -118,7 +118,7 @@ node getSignerMetrics.js
 
 ## 3 - Rede Toy
 
-⚠️ **Atenção!** Neste capítulo 3, rode todos os comandos em ambiente Linux!!!
+⚠️ **lembrete!** Nesta Seção 3, rode todos os comandos em ambiente Linux!!!
 
 - Execute o comando abaixo para acessar o diretório rede_toy: 
 
