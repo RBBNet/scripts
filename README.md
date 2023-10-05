@@ -195,3 +195,10 @@ chmod +x 04_Script_com_permissionamento_4_validators.sh
 ./04_Script_com_permissionamento_4_validators.sh
 
 ```
+
+## Versionamento
+Mais informações [aqui](https://github.com/RBBNet/rbb/blob/master/Versionamento.md). O versionamento semântico é uma boa prática que adotamos, seguindo o guia disponível em https://semver.org/. O Permissionamento já segue essa prática.
+
+No caso dos scripts, a API pública são os próprios scripts.
+
+⚠️ **IMPORTANTE**: ler sessão [_Dinâmica_](https://github.com/RBBNet/rbb/blob/master/Versionamento.md#din%C3%A2mica), que dita o comportamento para a implementação de novas funcionalidades.
