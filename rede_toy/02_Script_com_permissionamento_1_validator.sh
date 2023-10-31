@@ -52,7 +52,8 @@ docker-compose up -d validator
 # permissionamento
 cd ..
 
-curl -#SL https://github.com/RBBNet/Permissionamento/releases/download/v1.0.1%2Bmigrations/Permissionamento.tar.gz | tar xz
+tag=$(curl -I https://github.com/RBBNet/Permissionamento/releases/latest | grep -i location | awk -F "/" '{ print $8 }' | tr -d '\n\r' | jq -sRr @uri)
+curl -#LO https://github.com/RBBNet/Permissionamento/releases/download/$tag/Permissionamento.tar.gz | tar xz
 cd Permissionamento
 yarn install
 yarn linuxcompiler
