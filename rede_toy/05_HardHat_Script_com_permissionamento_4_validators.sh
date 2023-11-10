@@ -4,12 +4,12 @@
 projectname="redeToy_HardHat_Teste4Validators"
 branch_do_Permissionamento="-b migracao-hardhat"
 
-PortaBoot="10371"
-PortaValidator1="14070"
-PortaValidator2="13073"
-PortaValidator3="16074"
-PortaValidator4="17075"
-PortaWriter="10432"
+PortaBoot="10071"
+PortaValidator1="10070"
+PortaValidator2="10073"
+PortaValidator3="10074"
+PortaValidator4="10075"
+PortaWriter="10072"
 
 
 
