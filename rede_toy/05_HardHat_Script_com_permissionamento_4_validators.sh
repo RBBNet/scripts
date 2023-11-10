@@ -31,7 +31,7 @@ cd $projectname
 ./rbb-cli config set nodes.writer.ports+=[\"$PortaWriter:8545\"]
 # cria o genesis
 ./rbb-cli genesis create --validators validator1,validator2,validator3,validator4
-# desabilita o discovery nos nós especificados
+# desabilita o discovery nos nós especificados 
 ./rbb-cli config set nodes.validator1.environment.BESU_DISCOVERY_ENABLED=false
 ./rbb-cli config set nodes.writer.environment.BESU_DISCOVERY_ENABLED=false
 ./rbb-cli config set nodes.validator2.environment.BESU_DISCOVERY_ENABLED=false
@@ -39,12 +39,12 @@ cd $projectname
 ./rbb-cli config set nodes.validator4.environment.BESU_DISCOVERY_ENABLED=false
 
 # ajusta os static nodes apontando para o boot
-bootkey=$(./rbb-cli config dump | grep 0x | sed -n '2 p' |sed 's/"publicKey": "0x//' | sed 's/",//')
-validator1key=$(./rbb-cli config dump | grep 0x | sed -n '4 p' |sed 's/"publicKey": "0x//' | sed 's/",//')
-validator2key=$(./rbb-cli config dump | grep 0x | sed -n '6 p' |sed 's/"publicKey": "0x//' | sed 's/",//')
-validator3key=$(./rbb-cli config dump | grep 0x | sed -n '8 p' |sed 's/"publicKey": "0x//' | sed 's/",//')
-validator4key=$(./rbb-cli config dump | grep 0x | sed -n '10 p' |sed 's/"publicKey": "0x//' | sed 's/",//')
-writerkey=$(./rbb-cli config dump | grep 0x | sed -n '12 p' |sed 's/"publicKey": "0x//' | sed 's/",//')
+bootkey=$(./rbb-cli config dump | grep 0x | sed -n '2 p' |sed 's/"publicKey": "0x//' | sed 's/",//' | sed 's/ //g')
+validator1key=$(./rbb-cli config dump | grep 0x | sed -n '4 p' |sed 's/"publicKey": "0x//' | sed 's/",//'| sed 's/ //g')
+validator2key=$(./rbb-cli config dump | grep 0x | sed -n '6 p' |sed 's/"publicKey": "0x//' | sed 's/",//'| sed 's/ //g')
+validator3key=$(./rbb-cli config dump | grep 0x | sed -n '8 p' |sed 's/"publicKey": "0x//' | sed 's/",//'| sed 's/ //g')
+validator4key=$(./rbb-cli config dump | grep 0x | sed -n '10 p' |sed 's/"publicKey": "0x//' | sed 's/",//'| sed 's/ //g')
+writerkey=$(./rbb-cli config dump | grep 0x | sed -n '12 p' |sed 's/"publicKey": "0x//' | sed 's/",//'| sed 's/ //g')
 echo "[
 \"enode://$bootkey@boot:30303\",
 \"enode://$validator2key@validator2:30303\",
@@ -120,3 +120,4 @@ cd .. && cd $projectname
 
 docker-compose logs -f
 }
+
