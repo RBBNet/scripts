@@ -51,9 +51,10 @@ docker-compose up -d validator
 
 # permissionamento
 cd ..
-
+# O Curl abaixo faz o download da última release
 tag=$(curl -I https://github.com/RBBNet/Permissionamento/releases/latest | grep -i location | awk -F "/" '{ print $8 }' | tr -d '\n\r' | jq -sRr @uri)
 curl -SL https://github.com/RBBNet/Permissionamento/releases/download/$tag/Permissionamento.tar.gz | tar xz
+
 cd Permissionamento
 yarn install
 yarn linuxcompiler
