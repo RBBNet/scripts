@@ -138,7 +138,7 @@ PortaValidator="10072"
 PortaWriter="10073"
 ```
 - projectname -> Nome da pasta que deseja.
-- branch -> Selecione a Branch que deseja usar.
+- branch -> Selecione a branch do repositório Permissionamento que deseja usar. Este é o repositório que contém o código dos smart contracts de permissionamento. 
 - Portas -> São as portas RPC (default 8545). Altere para não dar conflito com outras que já estão levantadas e ocasionar um erro.
 
 Caso queria mover o arquivo para uma pasta de sua escolha que deseja executar o script, use o comando `mv`, por exemplo:
