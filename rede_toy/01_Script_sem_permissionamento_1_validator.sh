@@ -11,7 +11,7 @@ echo "Dica:"
 echo "Utilize portas que não estão em uso"
 sleep 4
 
-curl -#SL https://github.com/RBBNet/start-network/releases/download/v0.4.0-permv1/start-network.tar.gz | tar xz
+curl -#SL https://github.com/RBBNet/start-network/releases/download/v0.4.1%2Bpermv1/start-network.tar.gz | tar xz
 mv start-network $projectname
 cd $projectname
 # cria os nós especificados.

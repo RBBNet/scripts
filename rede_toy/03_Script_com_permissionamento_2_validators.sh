@@ -18,7 +18,7 @@ echo "Usar o node a partir da versão 16"
 echo "Utilize portas que não estão em uso"
 sleep 4
 
-curl -#SL https://github.com/RBBNet/start-network/releases/download/v0.4.0-permv1/start-network.tar.gz | tar xz
+curl -#SL https://github.com/RBBNet/start-network/releases/download/v0.4.1%2Bpermv1/start-network.tar.gz | tar xz
 mv start-network $projectname
 cd $projectname
 # cria os nós especificados.
@@ -58,9 +58,7 @@ docker-compose up -d validator1 validator2
 # permissionamento
 cd ..
 
-# O Curl abaixo faz o download da última release
-tag=$(curl -I https://github.com/RBBNet/Permissionamento/releases/latest | grep -i location | awk -F "/" '{ print $8 }' | tr -d '\n\r' | jq -sRr @uri)
-curl -SL https://github.com/RBBNet/Permissionamento/releases/download/$tag/Permissionamento.tar.gz | tar xz
+curl -SL https://github.com/RBBNet/Permissionamento/releases/download/v1.0.1%2B2023-09-28/Permissionamento.tar.gz | tar xz
 
 cd Permissionamento
 yarn install
