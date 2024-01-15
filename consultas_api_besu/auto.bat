@@ -1,6 +1,8 @@
 @echo off
 setlocal enabledelayedexpansion
 
+call enode.md_downloader.bat
+
 :begin
 node getSignerMetrics.js > %temp%\RPC-calls-auto.txt
 
