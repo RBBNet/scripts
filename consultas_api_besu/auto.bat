@@ -1,7 +1,7 @@
 @echo off
 setlocal enabledelayedexpansion
 
-call enode.md_downloader.bat
+rem call enode.md_downloader.bat
 cls
 echo Carregando...
 
