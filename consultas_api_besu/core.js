@@ -1,5 +1,6 @@
 const fs = require('fs').promises;
 const axios = require('axios');
+require('dotenv').config();  // Necessário para carregar variáveis de ambiente
 
 async function storeIntoArrays(instituicao, enode, account) {
   try {
@@ -72,12 +73,19 @@ async function makeRpcCall(host, port, method, params = []) {
 
 async function makeRpcCall_signerMetrics(host, port, method, params = []) {
   const url = `http://${host}:${port}`;
+  const proxyConfig = process.env.PROXY ? {
+    host: process.env.PROXY_HOST,
+    port: process.env.PROXY_PORT
+  } : null;
+
   try {
     const response = await axios.post(url, {
       jsonrpc: '2.0',
       method: method,
-      params: ["1"],
+      params: params,
       id: 1,
+    }, {
+      proxy: proxyConfig
     });
     return response.data.result;
   } catch (error) {
