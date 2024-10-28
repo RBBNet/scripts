@@ -3,7 +3,26 @@
 
 set -e
 
-projectname="redeToy_HardHat_General"
+# Lista de palavras curtas para evitar colisão no nome do projeto
+random_word_list=("sky" "chill" "wave" "storm" "wind" "cloud" "sun" "moon" "star" "nova" \
+                  "fire" "ice" "rain" "snow" "rock" "dust" "mist" "leaf" "tree" "bird" \
+                  "fox" "wolf" "lion" "bear" "hawk" "fish" "frog" "wind" "storm" "echo" \
+                  "dark" "light" "void" "flare" "peak" "crest" "rise" "fall" "swift" "calm" \
+                  "blue" "red" "green" "gold" "silver" "iron" "rust" "ash" "glow" "flare" \
+                  "stone" "river" "brook" "creek" "hill" "mount" "valley" "shade" "beam")
+
+# Função para selecionar uma palavra aleatória da lista
+function generate_random_word() {
+  echo ${random_word_list[$RANDOM % ${#random_word_list[@]}]}
+}
+
+# Gerar um nome de projeto com a palavra aleatória
+random_word=$(generate_random_word)
+
+
+
+
+projectname="redeToy_${random_word}"
 branch_do_Permissionamento="-b migracao-hardhat"
 
 set -e  # Parar a execução em caso de erro
