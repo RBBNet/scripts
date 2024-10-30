@@ -31,7 +31,7 @@ if [[ "$latest_script" != "$current_script" ]]; then
   
   exec "$SCRIPT_PATH"
 else
-  echo "O script já está na versão mais recente. Versão Atual: $version"
+  echo "O script já está na versão mais recente. ${yellow}Versão: $version${normal}"
 fi
 # ------ fim do auto-updater ------
 
