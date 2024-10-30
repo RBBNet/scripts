@@ -422,7 +422,7 @@ done
 
 
 # Implantação do permissionamento
-yarn deploy --network besu
+outputDeploy=$(yarn hardhat deploy --network network_name | tee /dev/tty)
 
 fi
 
@@ -472,11 +472,16 @@ for i in $(seq 1 $num_writers); do
 done
 
 
-
-
+echo
+echo "┌─────────────────────────────────────────────────────────────┐"
+echo "│ Endereços dos smart contracts                               │"
+echo "├─────────────────────────────────────────────────────────────┤"
+echo "│ Admin:        $(echo "$outputDeploy" | grep -E 'Admin contract' | cut -d '=' -f2 | sed 's/ //')    │"
+echo "│ NodeRules:    $(echo "$outputDeploy" | grep -E 'NodeRules address' | cut -d '=' -f2 | sed 's/ //')    │"
+echo "| AccountRules: $(echo "$outputDeploy" | grep -E 'with Rules address' | cut -d '=' -f2 | sed 's/ //')    │"
+echo "└─────────────────────────────────────────────────────────────┘"
 
 #----------------------------------
-#cd .. && cd $projectname
 
 echo
 echo "para ver os logs digite o comando ${yellow}docker-compose -f ./$projectname/docker-compose.yml logs -f${normal}"
