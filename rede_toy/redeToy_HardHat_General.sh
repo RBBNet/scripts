@@ -121,7 +121,6 @@ function get_base_port() {
 }
 
 
-
 # Perguntas interativas
 num_validators=$(read_number "${yellow}Quantos validadores deseja criar?${normal} ")
 num_boots=$(read_number "${blue}Quantos nós boot deseja criar?${normal} ")
