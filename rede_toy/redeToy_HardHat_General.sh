@@ -4,6 +4,17 @@
 version="1.0"
 set -e
 
+# Definindo variáveis de estilo
+bold=$(tput bold)
+normal=$(tput sgr0)
+blue=$(tput setaf 4)
+green=$(tput setaf 2)
+black=$(tput setaf 0)
+yellow=$(tput setaf 3)
+magenta=$(tput setaf 5)
+vermelho=$(tput setaf 1)
+background_yellow=$(tput setab 3)
+
 # Auto-updater
 GITHUB_URL="https://raw.githubusercontent.com/RBBNet/scripts/refs/heads/main/rede_toy/redeToy_HardHat_General.sh"
 
@@ -11,16 +22,19 @@ SCRIPT_PATH="$0"
 latest_script=$(curl -s $GITHUB_URL)
 current_script=$(cat $SCRIPT_PATH)
 
+latest_version=$(echo "$latest_script" | grep -E '^version=' | cut -d'"' -f2)
+
 if [[ "$latest_script" != "$current_script" ]]; then
-  echo "Nova versão encontrada: echo "$(latest_script | grep version)". Atualizando o script..."
+  echo "Nova versão encontrada => Versão Atual: $version ${yellow}Versão nova $latest_version${normal}. Atualizando o script..."
   echo "$latest_script" > "$SCRIPT_PATH"
   chmod +x "$SCRIPT_PATH"
   
-  exec "$SCRIPT_PATH" "$@"
+  exec "$SCRIPT_PATH"
 else
   echo "O script já está na versão mais recente. Versão Atual: $version"
 fi
 # ------ fim do auto-updater ------
+
 
 
 
@@ -46,19 +60,6 @@ random_word=$(generate_random_word)
 
 projectname="redeToy_${random_word}"
 branch_do_Permissionamento="-b migracao-hardhat"
-
-set -e  # Parar a execução em caso de erro
-
-# Definindo variáveis de estilo
-bold=$(tput bold)
-normal=$(tput sgr0)
-blue=$(tput setaf 4)
-green=$(tput setaf 2)
-black=$(tput setaf 0)
-yellow=$(tput setaf 3)
-magenta=$(tput setaf 5)
-vermelho=$(tput setaf 1)
-background_yellow=$(tput setab 3)
 
 
 # Função para garantir entrada numérica
