@@ -33,6 +33,8 @@ if [[ "$latest_script" != "$current_script" ]]; then
   echo "Atualização concluída: ${yellow}v$latest_version${normal}."
   sleep 2
   echo
+  echo
+  echo "-------------------------------"
   chmod +x "$SCRIPT_PATH"
   
   exec "$SCRIPT_PATH"
