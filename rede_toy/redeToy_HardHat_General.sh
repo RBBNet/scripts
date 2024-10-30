@@ -1,7 +1,7 @@
 #!/bin/bash
 # Descrição:  Script implantador de uma rede toy, utilizando o HardHat com ou sem permissionamento e com número de nós dinâmicos (Usuário pode escolhar).
+version="1.1"
 
-version="1.0"
 set -e
 
 # Definindo variáveis de estilo
@@ -27,11 +27,11 @@ latest_version=$(echo "$latest_script" | grep -E '^version=' | cut -d'"' -f2)
 if [[ "$latest_script" != "$current_script" ]]; then
   echo "Nova versão encontrada => Versão Atual: $version ${yellow}Versão nova $latest_version${normal}. Atualizando o script..."
   echo "$latest_script" > "$SCRIPT_PATH"
+  echo "Script atualizado. ${yellow}Versão: $version${normal}"
+  sleep 2
   chmod +x "$SCRIPT_PATH"
   
   exec "$SCRIPT_PATH"
-else
-  echo "O script já está na versão mais recente. ${yellow}Versão: $version${normal}"
 fi
 # ------ fim do auto-updater ------
 
