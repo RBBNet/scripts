@@ -1,6 +1,6 @@
 #!/bin/bash
 # Descrição:  Script implantador de uma rede toy, utilizando o HardHat com ou sem permissionamento e com número de nós dinâmicos (Usuário pode escolhar).
-version="1.4"
+version="1.5"
 
 set -e
 
@@ -422,7 +422,7 @@ done
 
 
 # Implantação do permissionamento
-outputDeploy=$(yarn hardhat deploy --network network_name | tee /dev/tty)
+outputDeploy=$(yarn deploy --network besu | tee /dev/tty)
 
 fi
 
