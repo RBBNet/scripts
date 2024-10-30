@@ -27,7 +27,7 @@ latest_version=$(echo "$latest_script" | grep -E '^version=' | cut -d'"' -f2)
 if [[ "$latest_script" != "$current_script" ]]; then
   echo "Nova versão encontrada => Versão Atual: $version ${yellow}Versão nova $latest_version${normal}. Atualizando o script..."
   echo "$latest_script" > "$SCRIPT_PATH"
-  echo "Script atualizado. ${yellow}Versão: $version${normal}"
+  echo "Atualização concluída: v${yellow}$latest_version${normal}."
   sleep 2
   chmod +x "$SCRIPT_PATH"
   
