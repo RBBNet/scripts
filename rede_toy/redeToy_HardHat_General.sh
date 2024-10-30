@@ -1,7 +1,29 @@
-# Script implantador de uma rede toy, utilizando o HardHat
-# com ou sem permissionamento e com número de nós dinâmicos (Usuário pode escolhar).
+#!/bin/bash
+# Versão:     1.0
+# Descrição:  Script implantador de uma rede toy, utilizando o HardHat com ou sem permissionamento e com número de nós dinâmicos (Usuário pode escolhar).
 
 set -e
+
+# Download automático do update do código:
+GITHUB_URL="https://raw.githubusercontent.com/RBBNet/scripts/refs/heads/main/rede_toy/redeToy_HardHat_General.sh"
+
+SCRIPT_PATH="$0"
+latest_script=$(curl -s $GITHUB_URL)
+current_script=$(cat $SCRIPT_PATH)
+
+if [[ "$latest_script" != "$current_script" ]]; then
+  echo "Nova versão encontrada. Atualizando o script..."
+  echo "$latest_script" > "$SCRIPT_PATH"
+  chmod +x "$SCRIPT_PATH"
+  
+  exec "$SCRIPT_PATH" "$@"
+else
+  echo "O script já está na versão mais recente."
+fi
+# ------ fim do auto-updater ------
+
+
+
 
 # Lista de palavras curtas para evitar colisão no nome do projeto
 random_word_list=("sky" "chill" "wave" "storm" "wind" "cloud" "sun" "moon" "star" "nova" \
