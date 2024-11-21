@@ -65,7 +65,7 @@ random_word=$(generate_random_word)
 
 
 projectname="redeToy_${random_word}"
-branch_do_Permissionamento="-b migracao-hardhat"
+branch_do_Permissionamento="-b main"
 
 
 # Função para garantir entrada numérica
