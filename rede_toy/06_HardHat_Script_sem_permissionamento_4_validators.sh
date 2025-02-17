@@ -13,11 +13,38 @@ PortaWriter="10072"
 
 
 
+# A versão do Besu é passada como primeiro argumento ($1)
+versao_do_besu="$1"
+randomize="$2"
 
-
+if [ -z "$1" ]; then
+  versao_do_besu="latest"
+fi
 
 
 git clone https://github.com/RBBNet/start-network.git -b main
+cd start-network
+sed -i "s/ARG BESU_VERSION=latest/ARG BESU_VERSION=${versao_do_besu}/" "Dockerfile"
+sed -i "s|image: \${IMAGE_BESU:-hyperledger/besu}|image: \${IMAGE_BESU:-hyperledger/besu:${versao_do_besu}}|" "docker-compose.yml.hbs"
+echo "Versão do Besu alterada com sucesso."
+FILE="docker-compose.yml.hbs"
+
+# Verificar se a variável já existe no arquivo
+if [ "$randomize" = "True" ]; then
+    # Verificar se a variável BESU_OPTS já existe no arquivo
+    if ! grep -q "BESU_OPTS" "$FILE"; then
+        # Se não existir, adicionar a variável BESU_OPTS ao ambiente
+        sed -i '/<< : \*localization-default/a \ \ \ \ \ \ BESU_OPTS: "-Dsecp256k1.randomize=false"' "$FILE"
+        echo "Variável BESU_OPTS adicionada com sucesso."
+    else
+        echo "Variável BESU_OPTS já existe no arquivo."
+    fi
+else
+    echo "A variável BESU_OPTS não será adicionada."
+fi
+
+cd ..
+
 mv start-network $projectname
 cd $projectname
 # cria os nós especificados.
@@ -37,6 +64,9 @@ cd $projectname
 ./rbb-cli config set nodes.validator2.environment.BESU_DISCOVERY_ENABLED=false
 ./rbb-cli config set nodes.validator3.environment.BESU_DISCOVERY_ENABLED=false
 ./rbb-cli config set nodes.validator4.environment.BESU_DISCOVERY_ENABLED=false
+
+#mais um parâmetro
+
 
 # ajusta os static nodes apontando para o boot
 bootkey=$(./rbb-cli config dump | grep 0x | sed -n '2 p' |sed 's/"publicKey": "0x//' | sed 's/",//' | sed 's/ //g')
@@ -76,47 +106,4 @@ echo "[
 ./rbb-cli config render-templates
 docker-compose up -d validator1 validator2 validator3 validator4 boot writer
 
-
-# ---------------------------------
-# permissionamento
-cd ..
-
-# Garantia de que será usado o node 16
-. $NVM_DIR/nvm.sh
-nvm install 16
-nvm use 16
-npm i --global yarn
-# ---- - - - -
-
-git clone https://github.com/RBBNet/Permissionamento.git $branch_do_Permissionamento
-cd Permissionamento
-yarn install
-#yarn linuxcompiler
-
-# get validator1 ip
-validator1container=$(docker ps --format "{{.Names}}" | grep validator1)
-docker inspect $validator1container
-validator1ip=$(docker inspect $validator1container | grep IPAddr |  sed -n '3 p' | awk '{ print $2 }' | sed "s/\"//" | sed "s/\"//" | sed "s/,//")
-
-# get boot ip
-bootcontainer=$(docker ps --format "{{.Names}}" | grep -i $(echo $projectname\_boot))
-docker inspect $bootcontainer
-bootip=$(docker inspect $bootcontainer | grep IPAddr |  sed -n '3 p' | awk '{ print $2 }' | sed "s/\"//" | sed "s/\"//" | sed "s/,//")
-
-echo "NODE_INGRESS_CONTRACT_ADDRESS=0x0000000000000000000000000000000000009999
-ACCOUNT_INGRESS_CONTRACT_ADDRESS=0x0000000000000000000000000000000000008888
-BESU_NODE_PERM_ACCOUNT=627306090abaB3A6e1400e9345bC60c78a8BEf57
-BESU_NODE_PERM_KEY=c87509a1c067bbde78beb793e6fa76530b6382a4c0241e5e4a9ec0a0f44dc0d3
-BESU_NODE_PERM_ENDPOINT=http://localhost:$PortaValidator1
-CHAIN_ID=648629
-INITIAL_ALLOWLISTED_NODES=enode://$bootkey|0|0x000000000000|Boot|BNDES,enode://$validator1key|1|0x000000000000|Validator|BNDES,enode://$validator2key|1|0x000000000000|Validator|BNDES,enode://$validator3key|1|0x000000000000|Validator|BNDES,enode://$validator4key|1|0x000000000000|Validator|BNDES,enode://$writerkey|2|0x000000000000|Writer|BNDES" > .env
-
-
-echo;echo "Esperando a produção de blocos entre os nós, por favor aguarde. . .";echo
-sleep 120
-
-yarn deploy --network besu
-cd .. && cd $projectname
-
-docker-compose logs -f
 }
