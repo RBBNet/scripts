@@ -11,25 +11,13 @@ PortaValidator3="10074"
 PortaValidator4="10075"
 PortaWriter="10072"
 
-if [ -z "$1" ]; then
-  echo "Por favor, forneça a versão do Besu como parâmetro."
-  exit 1
-fi
 
-# A versão do Besu é passada como primeiro argumento ($1)
-versao_do_besu="$1"
-versao_alvo="23.4.1" #workaround para verificar a versão do besu
+
 
 
 
 
 git clone https://github.com/RBBNet/start-network.git -b main
-cd start-network
-sed -i "s/ARG BESU_VERSION=latest/ARG BESU_VERSION=${versao_do_besu}/" "Dockerfile"
-sed -i "s|image: \${IMAGE_BESU:-hyperledger/besu}|image: \${IMAGE_BESU:-hyperledger/besu:${versao_do_besu}}|" "docker-compose.yml.hbs"
-echo "Versão do Besu alterada com sucesso."
-cd ..
-
 mv start-network $projectname
 cd $projectname
 # cria os nós especificados.
@@ -49,16 +37,6 @@ cd $projectname
 ./rbb-cli config set nodes.validator2.environment.BESU_DISCOVERY_ENABLED=false
 ./rbb-cli config set nodes.validator3.environment.BESU_DISCOVERY_ENABLED=false
 ./rbb-cli config set nodes.validator4.environment.BESU_DISCOVERY_ENABLED=false
-
-if [[ "$(echo -e "$versao_do_besu\n$versao_alvo" | sort -V | head -n 1)" == "$versao_do_besu" ]]; then
-./rbb-cli config set nodes.validator1.environment.BESU_OPTS=-Dsecp256k1.randomize=false
-./rbb-cli config set nodes.writer.environment.BESU_OPTS=-Dsecp256k1.randomize=false
-./rbb-cli config set nodes.validator2.environment.BESU_OPTS=-Dsecp256k1.randomize=false
-./rbb-cli config set nodes.validator3.environment.BESU_OPTS=-Dsecp256k1.randomize=false
-./rbb-cli config set nodes.boot.environment.BESU_OPTS=-Dsecp256k1.randomize=false
-else
-  echo "Nao consegui fazer a mudanca no dsecp256k1."
-fi
 
 # ajusta os static nodes apontando para o boot
 bootkey=$(./rbb-cli config dump | grep 0x | sed -n '2 p' |sed 's/"publicKey": "0x//' | sed 's/",//' | sed 's/ //g')
@@ -142,4 +120,3 @@ cd .. && cd $projectname
 
 docker-compose logs -f
 }
-
