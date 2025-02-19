@@ -17,6 +17,10 @@ PortaWriter="10072"
 versao_do_besu="$1"
 randomize="$2"
 
+if [ -z "$randomize" ]; then
+  randomize="False"
+fi
+
 if [ -z "$1" ]; then
   versao_do_besu="latest"
 fi
