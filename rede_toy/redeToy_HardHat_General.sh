@@ -1,6 +1,6 @@
 #!/bin/bash
 # Descrição:  Script implantador de uma rede toy, utilizando o HardHat com ou sem permissionamento e com número de nós dinâmicos (Usuário pode escolhar).
-version="1.5"
+version="1.6"
 
 set -e
 
@@ -14,34 +14,6 @@ yellow=$(tput setaf 3)
 magenta=$(tput setaf 5)
 vermelho=$(tput setaf 1)
 background_yellow=$(tput setab 3)
-
-# Auto-updater
-GITHUB_URL="https://raw.githubusercontent.com/RBBNet/scripts/refs/heads/main/rede_toy/redeToy_HardHat_General.sh"
-
-SCRIPT_PATH="$0"
-latest_script=$(curl -s $GITHUB_URL)
-current_script=$(cat $SCRIPT_PATH)
-
-latest_version=$(echo "$latest_script" | grep -E '^version=' | cut -d'"' -f2)
-
-if [[ "$latest_script" != "$current_script" ]]; then
-  echo "Nova versão do script encontrada => ${magenta}[Versão Atual: $version]${normal} --> ${green}[Versão nova $latest_version]${normal}."
-  sleep 2
-  echo "Atualizando..."
-  sleep 1
-  echo "$latest_script" > "$SCRIPT_PATH"
-  echo "Atualização concluída: ${yellow}v$latest_version${normal}."
-  sleep 2
-  echo
-  echo
-  echo "-------------------------------"
-  chmod +x "$SCRIPT_PATH"
-  
-  exec "$SCRIPT_PATH"
-fi
-# ------ fim do auto-updater ------
-
-
 
 
 
@@ -92,14 +64,14 @@ function check_ports_in_use() {
   # Verifica as próximas 'num_ports' portas a partir da base_port
   for i in $(seq 0 $((num_ports - 1))); do
     next_port=$((base_port + i))
-    
+
     # Usando ss para verificar se a porta está em uso
     if ss -tuln | grep -q ":$next_port "; then
       echo "Porta $next_port está em uso. Escolha outra porta inicial."
       return 1  # Retorna 1 para indicar que a verificação falhou
     fi
   done
-  
+
   return 0  # Todas as portas estão livres
 }
 
@@ -107,7 +79,7 @@ function check_ports_in_use() {
 function get_base_port() {
   while true; do
     base_port=$(read_number "Informe a porta inicial: ")
-    
+
     # Verifica as 'num_ports' portas a partir da base_port
     if check_ports_in_use $base_port; then
       echo "Portas a partir de $base_port estão livres."
@@ -121,7 +93,13 @@ function get_base_port() {
 }
 
 
-# Perguntas interativas
+
+read -p "Deseja definir a versão do Besu? (Pressione Enter para 'latest' ou insira a versão desejada): " versao_do_besu
+echo "Valor da versão do Besu: $versao_do_besu"
+
+read -p "Deseja ativar o randomize? (True/False): " randomize
+echo "Valor de randomize: $randomize"
+
 num_validators=$(read_number "${yellow}Quantos validadores deseja criar?${normal} ")
 num_boots=$(read_number "${blue}Quantos nós boot deseja criar?${normal} ")
 num_writers=$(read_number "${yellow}Quantos nós writer deseja criar?${normal} ")
@@ -130,17 +108,17 @@ get_base_port
 while true; do
   read -p "${blue}Deseja aplicar permissionamento? (s/n):${normal} " permissionamento
   case "$permissionamento" in
-    [sS]) 
+    [sS])
       echo "Permissionamento será aplicado."
       permissionamento="s"
       break
       ;;
-    [nN]) 
+    [nN])
       echo "Permissionamento não será aplicado."
       permissionamento="n"
       break
       ;;
-    *) 
+    *)
       echo "Por favor, responda com 's' ou 'n'."
       ;;
   esac
@@ -158,6 +136,29 @@ echo
 
 echo "Instalando start-network..."
 git clone https://github.com/RBBNet/start-network.git -b main
+
+cd start-network
+sed -i "s/ARG BESU_VERSION=latest/ARG BESU_VERSION=${versao_do_besu}/" "Dockerfile"
+sed -i "s|image: \${IMAGE_BESU:-hyperledger/besu}|image: \${IMAGE_BESU:-hyperledger/besu:${versao_do_besu}}|" "docker-compose.yml.hbs"
+echo "Versão do Besu alterada com sucesso."
+FILE="docker-compose.yml.hbs"
+
+# Verificar se a variável já existe no arquivo
+if [ "$randomize" = "True" ]; then
+    # Verificar se a variável BESU_OPTS já existe no arquivo
+    if ! grep -q "BESU_OPTS" "$FILE"; then
+        # Se não existir, adicionar a variável BESU_OPTS ao ambiente
+        sed -i '/<< : \*localization-default/a \ \ \ \ \ \ BESU_OPTS: "-Dsecp256k1.randomize=false"' "$FILE"
+        echo "Variável BESU_OPTS adicionada com sucesso."
+    else
+        echo "Variável BESU_OPTS já existe no arquivo."
+    fi
+else
+    echo "A variável BESU_OPTS não será adicionada."
+fi
+
+cd ..
+
 mv start-network $projectname
 cd $projectname
 
@@ -276,7 +277,7 @@ generate_static_nodes() {
 # Para todos os validadores: Apontam entre si e para os boots
 for i in $(seq 1 $num_validators); do
   node_name="validator$i"
-  
+
   enodes=()
 
   # Adiciona as chaves dos boots com o nome correto
@@ -298,7 +299,7 @@ done
 # Para todos os writers: Apontam apenas para os boots
 for i in $(seq 1 $num_writers); do
   node_name="writer$i"
-  
+
   enodes=()
 
   # Apenas as chaves dos boots com o nome correto
@@ -436,7 +437,7 @@ get_node_ip() {
   container="${projectname,,}_${node_name}_1"
   # Captura o IP do container usando docker inspect
   ip_address=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "$container" 2>/dev/null)
-  
+
   if [[ -z "$ip_address" ]]; then
     echo "IP não encontrado"
   else
