@@ -95,10 +95,11 @@ function get_base_port() {
 
 
 read -p "Deseja definir a versão do Besu? (Pressione Enter para 'latest' ou insira a versão desejada): " versao_do_besu
+versao_do_besu="${versao_do_besu:-latest}"
 echo "Valor da versão do Besu: $versao_do_besu"
 
-read -p "Deseja ativar o randomize? (True/False): " randomize
-echo "Valor de randomize: $randomize"
+read -p "Deseja desativar opção secp256k1.randomize? (Sim/Nao): " disable_randomize
+echo "Desabilitar secp256k1.randomize: $disable_randomize"
 
 num_validators=$(read_number "${yellow}Quantos validadores deseja criar?${normal} ")
 num_boots=$(read_number "${blue}Quantos nós boot deseja criar?${normal} ")
@@ -141,21 +142,20 @@ cd start-network
 sed -i "s/ARG BESU_VERSION=latest/ARG BESU_VERSION=${versao_do_besu}/" "Dockerfile"
 sed -i "s|image: \${IMAGE_BESU:-hyperledger/besu}|image: \${IMAGE_BESU:-hyperledger/besu:${versao_do_besu}}|" "docker-compose.yml.hbs"
 echo "Versão do Besu alterada com sucesso."
-FILE="docker-compose.yml.hbs"
 
+FILE="docker-compose.yml.hbs"
 # Verificar se a variável já existe no arquivo
-if [ "$randomize" = "True" ]; then
+if [ "$(echo "$disable_randomize" | tr '[:upper:]' '[:lower:]')" = "sim" ]; then
     # Verificar se a variável BESU_OPTS já existe no arquivo
     if ! grep -q "BESU_OPTS" "$FILE"; then
         # Se não existir, adicionar a variável BESU_OPTS ao ambiente
         sed -i '/<< : \*localization-default/a \ \ \ \ \ \ BESU_OPTS: "-Dsecp256k1.randomize=false"' "$FILE"
         echo "Variável BESU_OPTS adicionada com sucesso."
     else
-        echo "Variável BESU_OPTS já existe no arquivo."
+        echo "Variável BESU_OPTS já existe no arquivo. Opção secp256k1.randomize NÃO está sendo desabilitada"
     fi
-else
-    echo "A variável BESU_OPTS não será adicionada."
 fi
+
 
 cd ..
 
