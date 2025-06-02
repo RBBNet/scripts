@@ -355,7 +355,7 @@ npm i --global yarn
 # ---- - - - -
 
 git clone https://github.com/RBBNet/Permissionamento.git $branch_do_Permissionamento
-cd Permissionamento
+cd Permissionamento/gen01
 yarn install
 #yarn linuxcompiler
 
