@@ -1,6 +1,5 @@
 #!/bin/bash
-# Descrição:  Script implantador de uma rede toy, utilizando o HardHat com ou sem permissionamento e com número de nós dinâmicos (Usuário pode escolhar).
-version="1.6"
+version="2.1"
 
 set -e
 
@@ -156,15 +155,13 @@ if [ "$(echo "$disable_randomize" | tr '[:upper:]' '[:lower:]')" = "sim" ]; then
     fi
 fi
 
+export DOCKER_USER="$(id -u):$(id -g)"
+sed -i '/container_name:/a \ user: ${DOCKER_USER}' ./docker-compose.yml.hbs
 
 cd ..
 
 mv start-network $projectname
 cd $projectname
-
-
-
-
 
 # Criação dos nós dinamicamente
 nodes=""
@@ -208,10 +205,6 @@ for i in $(seq 1 $num_writers); do
   node_port["writer$i"]=$port  # Armazenando a porta no array node_port
   port_offset=$((port_offset + 1))
 done
-
-
-
-
 
 
 # Geração do genesis com validadores
@@ -344,8 +337,44 @@ docker-compose up -d $nodes_to_start
 
 if [[ "$permissionamento" == "s" ]]; then
 # ---------------------------------
-# permissionamento
+echo
+echo "${background_yellow}${black}${bold} FASE PREP: PREPARANDO PACOTE DE ARTEFATOS PARA GEN02 ${normal}"
+echo
+
+git clone https://github.com/RBBNet/Permissionamento.git $branch_do_Permissionamento
+cd Permissionamento
+
+cat > ./docker-compose.preparer.yml << EOF
+version: '3.7'
+services:
+  preparer:
+    image: node:22-alpine
+    user: ${DOCKER_USER}
+    working_dir: /usr/src/app
+    volumes:
+      - ./gen02:/usr/src/app
+    environment:
+      - HOME=/usr/src/app
+      - HTTP_PROXY=http://proxy01.bndes.net:8080
+      - HTTPS_PROXY=http://proxy01.bndes.net:8080
+      - NO_PROXY=localhost,.bndes.net,127.,10.,172.16.,172.17.,172.18.,172.19.,172.20.,172.21.,172.22.,172.23.,172.24.,172.25.,172.26.,172.27.,172.28.,172.29.,172.30.,172.31.,192.168.
+      - https_proxy=${HTTPS_PROXY}
+      - http_proxy=${HTTP_PROXY}
+      - no_proxy=${NO_PROXY}
+    command: sh -c "npm install && npm run compile && tar -czvf artifacts.tar.gz node_modules cache"
+EOF
+
+echo "Executando contêiner preparador para baixar dependências"
+docker-compose -f docker-compose.preparer.yml run --rm preparer
+
+mv ./gen02/artifacts.tar.gz ../
+
+rm docker-compose.preparer.yml
 cd ..
+
+echo
+echo "${background_yellow}${black}${bold} FASE 1: IMPLANTANDO ARQUITETURA GEN01 ${normal}"
+echo
 
 # Garantia de que será usado o node 16
 . $NVM_DIR/nvm.sh
@@ -354,7 +383,6 @@ nvm use 16
 npm i --global yarn
 # ---- - - - -
 
-git clone https://github.com/RBBNet/Permissionamento.git $branch_do_Permissionamento
 cd Permissionamento/gen01
 yarn install
 #yarn linuxcompiler
@@ -379,6 +407,8 @@ BESU_NODE_PERM_ACCOUNT=627306090abaB3A6e1400e9345bC60c78a8BEf57
 BESU_NODE_PERM_KEY=c87509a1c067bbde78beb793e6fa76530b6382a4c0241e5e4a9ec0a0f44dc0d3
 BESU_NODE_PERM_ENDPOINT=http://localhost:${node_port[validator1]}
 CHAIN_ID=648629" > .env
+
+export $(grep -v '^#' .env | xargs)
 
 # Adiciona "INITIAL_ALLOWLISTED_NODES=" sem pular linha
 echo -n "INITIAL_ALLOWLISTED_NODES=" >> .env
@@ -423,10 +453,175 @@ done
 
 
 # Implantação do permissionamento
-outputDeploy=$(yarn deploy --network besu | tee /dev/tty)
+outputDeployGen01=$(yarn deploy --network besu 2>&1 | tee /dev/tty)
+admin_gen01_addr=$(echo "$outputDeployGen01" | grep -E 'Admin contract deployed with address' | cut -d '=' -f2 | sed 's/ //g')
+nodeRules_gen01_addr=$(echo "$outputDeployGen01" | grep -E 'NodeRules address' | cut -d '=' -f2 | sed 's/ //g')
+accountRules_gen01_addr=$(echo "$outputDeployGen01" | grep -E 'with Rules address' | cut -d '=' -f2 | sed 's/ //g')
+
+
+echo
+echo "${background_yellow}${black}${bold} FASE 2: IMPLEMENTANDO ARQUITETURA GEN02 (VIA DOCKER) ${normal}"
+echo
+
+cd ../gen02
+cp ../../artifacts.tar.gz .
+
+echo "Corrigindo o endpoint da rede 'local_besu' no hardhat.config.js..."
+sed -i 's|url: "http://127.0.0.1:8545"|url: "http://validator1:8545"|' hardhat.config.js
+
+echo "Gerando arquivo parameters-toy.json"
+cat > ./deploy/parameters-toy.json << EOF
+{
+    "adminAddress": "${admin_gen01_addr}",
+    "organizations": [
+        {
+            "id": 0,
+            "cnpj": "00000000000001",
+            "name": "Org Patrono",
+            "orgType": "Patron",
+            "canVote": true
+        },
+        {
+            "id": 0,
+            "cnpj": "00000000000002",
+            "name": "Org Associado",
+            "orgType": "Associate",
+            "canVote": true
+        },
+        {
+            "id": 0,
+            "cnpj": "00000000000003",
+            "name": "Org Parceiro",
+            "orgType": "Partner",
+            "canVote": false
+        }
+    ],
+    "globalAdmins": [
+        "0x627306090abaB3A6e1400e9345bC60c78a8BEf57",
+        "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+        "0x70997970C51812dc3A010C7d01b50e0d17dc79C8"
+    ]
+}
+EOF
+
+cat > ./.env << EOF
+CONFIG_PARAMETERS=deploy/parameters-toy.json
+ACCOUNT_ADDRESS=627306090abaB3A6e1400e9345bC60c78a8BEf57
+PRIVATE_KEY=c87509a1c067bbde78beb793e6fa76530b6382a4c0241e5e4a9ec0a0f44dc0d3
+EOF
+
+echo "Criando deployer Docker para GEN02"
+
+cat > ./Dockerfile.deployer << EOF
+FROM node:22-alpine
+WORKDIR /usr/src/app
+COPY artifacts.tar.gz ./
+RUN tar -xzf artifacts.tar.gz
+COPY . .
+EOF
+
+NETWORK_NAME="${projectname,,}_default"
+cat > ./docker-compose.deployer.yml << EOF
+version: '3.7'
+services:
+  deployer:
+    build:
+      context: ${PWD}
+      dockerfile: Dockerfile.deployer
+    user: ${DOCKER_USER}
+    volumes:
+      - .:/usr/src/app
+    networks:
+      - besu_network
+    environment:
+      - HOME=/usr/src/app
+      - RPC_URL=http://validator1:8545
+      - CONFIG_PARAMETERS=deploy/parameters-toy.json
+      - ACCOUNT_ADDRESS=627306090abaB3A6e1400e9345bC60c78a8BEf57
+      - PRIVATE_KEY=c87509a1c067bbde78beb793e6fa76530b6382a4c0241e5e4a9ec0a0f44dc0d3
+
+networks:
+  besu_network:
+    external:
+      name: ${NETWORK_NAME}
+EOF
+
+echo "Implantando contratos da GEN02 pelo contêiner"
+outputDeployGen02=$(docker-compose -f docker-compose.deployer.yml run --rm deployer npm run local-deploy-gen02 2>&1 | tee /dev/tty)
+
+org_gen02_addr=$(echo "$outputDeployGen02" | grep 'OrganizationImpl implantado no endereço' | grep -o '0x[0-9a-fA-F]\{40\}')
+accountRules_gen02_addr=$(echo "$outputDeployGen02" | grep 'AccountRulesV2Impl implantado no endereço' | grep -o '0x[0-9a-fA-F]\{40\}')
+nodeRules_gen02_addr=$(echo "$outputDeployGen02" | grep 'NodeRulesV2Impl implantado no endereço' | grep -o '0x[0-9a-fA-F]\{40\}')
+gov_gen02_addr=$(echo "$outputDeployGen02" | grep 'Governance implantado no endereço' | grep -o '0x[0-9a-fA-F]\{40\}')
+
+echo
+echo "${background_yellow}${black}${bold} FASE 3: FINALIZANDO O UPGRADE PARA GEN02 ${normal}"
+echo
+
+cd ../..
+git clone -b script-reponteiramento-regras https://github.com/RBBNet/scripts-permissionamento.git
+cd scripts-permissionamento
+
+cat > ./.env << EOF
+JSON_RPC_URL=http://localhost:${node_port[validator1]}
+ACCOUNT_INGRESS_ADDRESS=0x0000000000000000000000000000000000008888
+NODE_INGRESS_ADDRESS=0x0000000000000000000000000000000000009999
+ADMIN_ADDRESS=${admin_gen01_addr}
+ORGANIZATION_ADDRESS=${org_gen02_addr}
+ACCOUNT_RULES_V2_ADDRESS=${accountRules_gen02_addr}
+NODE_RULES_V2_ADDRESS=${nodeRules_gen02_addr}
+GOVERNANCE_ADDRESS=${gov_gen02_addr}
+PRIVATE_KEY=0xc87509a1c067bbde78beb793e6fa76530b6382a4c0241e5e4a9ec0a0f44dc0d3
+EOF
+
+cat > ./docker-compose.finalizer.yml << EOF
+version: '3.7'
+services:
+  finalizer:
+    image: node:22-alpine
+    user: ${DOCKER_USER}
+    working_dir: /usr/src/app
+    volumes:
+      - .:/usr/src/app
+    environment:
+      - HOME=/usr/src/app
+      - HTTP_PROXY=http://proxy01.bndes.net:8080
+      - HTTPS_PROXY=http://proxy01.bndes.net:8080
+      - NO_PROXY=localhost,.bndes.net,127.,10.,172.16.,172.17.,172.18.,172.19.,172.20.,172.21.,172.22.,172.23.,172.24.,172.25.,172.26.,172.27.,172.28.,172.29.,172.30.,172.31.,192.168.,mvnrepo,nexus,nexus.bndes.net,gitlab.bndes.net
+      - https_proxy=${HTTPS_PROXY}
+      - http_proxy=${HTTP_PROXY}
+      - no_proxy=${NO_PROXY}
+    network_mode: "host"
+    command: ["node", "repoint-rules.js"]
+EOF
+
+echo "Instalando dependencias para os scripts"
+docker-compose -f docker-compose.finalizer.yml run --rm finalizer npm install
+
+echo "Adicionando nós ao contrato NodeRulesV2"
+for i in $(seq 1 $num_boots); do
+  pubkey="${bootkeys[$((i-1))]}"
+  enodeHigh="0x$(echo $pubkey | cut -c1-64)"
+  enodeLow="0x$(echo $pubkey | cut -c65-128)"
+  docker-compose -f docker-compose.finalizer.yml run --rm finalizer node node-rules-v2.js addLocalNode ${enodeHigh} ${enodeLow} Boot boot${i}
+done
+for i in $(seq 1 $num_validators); do
+  pubkey="${validatorkeys[$((i-1))]}"
+  enodeHigh="0x$(echo $pubkey | cut -c1-64)"
+  enodeLow="0x$(echo $pubkey | cut -c65-128)"
+  docker-compose -f docker-compose.finalizer.yml run --rm finalizer node node-rules-v2.js addLocalNode ${enodeHigh} ${enodeLow} Validator validator${i}
+done
+for i in $(seq 1 $num_writers); do
+  pubkey="${writerkeys[$((i-1))]}"
+  enodeHigh="0x$(echo $pubkey | cut -c1-64)"
+  enodeLow="0x$(echo $pubkey | cut -c65-128)"
+  docker-compose -f docker-compose.finalizer.yml run --rm finalizer node node-rules-v2.js addLocalNode ${enodeHigh} ${enodeLow} Writer writer${i}
+done
+
+echo "Reponteirando regras dos contratos Ingress para a GEN02"
+docker-compose -f docker-compose.finalizer.yml run --rm finalizer node util/repoint-rules.js
 
 fi
-
 #-------------- Informações dos nós ---------------
 
 
@@ -472,15 +667,6 @@ for i in $(seq 1 $num_writers); do
   printf "${bold}%-12s${normal} =>\tIP: ${blue}%-15s${normal}\tPorta: ${blue}%s${normal}\n" "$node_name" "$ip_address" "$port"
 done
 
-
-echo
-echo "┌─────────────────────────────────────────────────────────────┐"
-echo "│ Endereços dos smart contracts                               │"
-echo "├─────────────────────────────────────────────────────────────┤"
-echo "│ Admin:        $(echo "$outputDeploy" | grep -E 'Admin contract' | cut -d '=' -f2 | sed 's/ //')    │"
-echo "│ NodeRules:    $(echo "$outputDeploy" | grep -E 'NodeRules address' | cut -d '=' -f2 | sed 's/ //')    │"
-echo "| AccountRules: $(echo "$outputDeploy" | grep -E 'with Rules address' | cut -d '=' -f2 | sed 's/ //')    │"
-echo "└─────────────────────────────────────────────────────────────┘"
 
 #----------------------------------
 
