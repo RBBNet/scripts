@@ -153,7 +153,7 @@ if [ "$(echo "$disable_randomize" | tr '[:upper:]' '[:lower:]')" = "sim" ]; then
     else
         echo "Variável BESU_OPTS já existe no arquivo. Opção secp256k1.randomize NÃO está sendo desabilitada"
     fi
-fig
+fi
 
 cd ..
 
