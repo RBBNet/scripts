@@ -153,10 +153,7 @@ if [ "$(echo "$disable_randomize" | tr '[:upper:]' '[:lower:]')" = "sim" ]; then
     else
         echo "Variável BESU_OPTS já existe no arquivo. Opção secp256k1.randomize NÃO está sendo desabilitada"
     fi
-fi
-
-export DOCKER_USER="$(id -u):$(id -g)"
-sed -i '/container_name:/a \ user: ${DOCKER_USER}' ./docker-compose.yml.hbs
+fig
 
 cd ..
 
@@ -336,41 +333,6 @@ docker-compose up -d $nodes_to_start
 
 
 if [[ "$permissionamento" == "s" ]]; then
-# ---------------------------------
-echo
-echo "${background_yellow}${black}${bold} FASE PREP: PREPARANDO PACOTE DE ARTEFATOS PARA GEN02 ${normal}"
-echo
-
-git clone https://github.com/RBBNet/Permissionamento.git $branch_do_Permissionamento
-cd Permissionamento
-
-cat > ./docker-compose.preparer.yml << EOF
-version: '3.7'
-services:
-  preparer:
-    image: node:22-alpine
-    user: ${DOCKER_USER}
-    working_dir: /usr/src/app
-    volumes:
-      - ./gen02:/usr/src/app
-    environment:
-      - HOME=/usr/src/app
-      - HTTP_PROXY=http://proxy01.bndes.net:8080
-      - HTTPS_PROXY=http://proxy01.bndes.net:8080
-      - NO_PROXY=localhost,.bndes.net,127.,10.,172.16.,172.17.,172.18.,172.19.,172.20.,172.21.,172.22.,172.23.,172.24.,172.25.,172.26.,172.27.,172.28.,172.29.,172.30.,172.31.,192.168.
-      - https_proxy=${HTTPS_PROXY}
-      - http_proxy=${HTTP_PROXY}
-      - no_proxy=${NO_PROXY}
-    command: sh -c "npm install && npm run compile && tar -czvf artifacts.tar.gz node_modules cache"
-EOF
-
-echo "Executando contêiner preparador para baixar dependências"
-docker-compose -f docker-compose.preparer.yml run --rm preparer
-
-mv ./gen02/artifacts.tar.gz ../
-
-rm docker-compose.preparer.yml
-cd ..
 
 echo
 echo "${background_yellow}${black}${bold} FASE 1: IMPLANTANDO ARQUITETURA GEN01 ${normal}"
@@ -383,6 +345,7 @@ nvm use 16
 npm i --global yarn
 # ---- - - - -
 
+git clone https://github.com/RBBNet/Permissionamento.git $branch_do_Permissionamento
 cd Permissionamento/gen01
 yarn install
 #yarn linuxcompiler
@@ -464,7 +427,10 @@ echo "${background_yellow}${black}${bold} FASE 2: IMPLEMENTANDO ARQUITETURA GEN0
 echo
 
 cd ../gen02
-cp ../../artifacts.tar.gz .
+
+nvm install 22
+nvm use --delete-prefix 22
+npm install
 
 echo "Corrigindo o endpoint da rede 'local_besu' no hardhat.config.js..."
 sed -i 's|url: "http://127.0.0.1:8545"|url: "http://validator1:8545"|' hardhat.config.js
@@ -510,44 +476,8 @@ ACCOUNT_ADDRESS=627306090abaB3A6e1400e9345bC60c78a8BEf57
 PRIVATE_KEY=c87509a1c067bbde78beb793e6fa76530b6382a4c0241e5e4a9ec0a0f44dc0d3
 EOF
 
-echo "Criando deployer Docker para GEN02"
-
-cat > ./Dockerfile.deployer << EOF
-FROM node:22-alpine
-WORKDIR /usr/src/app
-COPY artifacts.tar.gz ./
-RUN tar -xzf artifacts.tar.gz
-COPY . .
-EOF
-
-NETWORK_NAME="${projectname,,}_default"
-cat > ./docker-compose.deployer.yml << EOF
-version: '3.7'
-services:
-  deployer:
-    build:
-      context: ${PWD}
-      dockerfile: Dockerfile.deployer
-    user: ${DOCKER_USER}
-    volumes:
-      - .:/usr/src/app
-    networks:
-      - besu_network
-    environment:
-      - HOME=/usr/src/app
-      - RPC_URL=http://validator1:8545
-      - CONFIG_PARAMETERS=deploy/parameters-toy.json
-      - ACCOUNT_ADDRESS=627306090abaB3A6e1400e9345bC60c78a8BEf57
-      - PRIVATE_KEY=c87509a1c067bbde78beb793e6fa76530b6382a4c0241e5e4a9ec0a0f44dc0d3
-
-networks:
-  besu_network:
-    external:
-      name: ${NETWORK_NAME}
-EOF
-
-echo "Implantando contratos da GEN02 pelo contêiner"
-outputDeployGen02=$(docker-compose -f docker-compose.deployer.yml run --rm deployer npm run local-deploy-gen02 2>&1 | tee /dev/tty)
+echo "Implantando contratos da Gen02"
+outputDeployGen02=$(npm run local-deploy-gen02 2>&1 | tee /dev/tty)
 
 org_gen02_addr=$(echo "$outputDeployGen02" | grep 'OrganizationImpl implantado no endereço' | grep -o '0x[0-9a-fA-F]\{40\}')
 accountRules_gen02_addr=$(echo "$outputDeployGen02" | grep 'AccountRulesV2Impl implantado no endereço' | grep -o '0x[0-9a-fA-F]\{40\}')
@@ -574,52 +504,32 @@ GOVERNANCE_ADDRESS=${gov_gen02_addr}
 PRIVATE_KEY=0xc87509a1c067bbde78beb793e6fa76530b6382a4c0241e5e4a9ec0a0f44dc0d3
 EOF
 
-cat > ./docker-compose.finalizer.yml << EOF
-version: '3.7'
-services:
-  finalizer:
-    image: node:22-alpine
-    user: ${DOCKER_USER}
-    working_dir: /usr/src/app
-    volumes:
-      - .:/usr/src/app
-    environment:
-      - HOME=/usr/src/app
-      - HTTP_PROXY=http://proxy01.bndes.net:8080
-      - HTTPS_PROXY=http://proxy01.bndes.net:8080
-      - NO_PROXY=localhost,.bndes.net,127.,10.,172.16.,172.17.,172.18.,172.19.,172.20.,172.21.,172.22.,172.23.,172.24.,172.25.,172.26.,172.27.,172.28.,172.29.,172.30.,172.31.,192.168.,mvnrepo,nexus,nexus.bndes.net,gitlab.bndes.net
-      - https_proxy=${HTTPS_PROXY}
-      - http_proxy=${HTTP_PROXY}
-      - no_proxy=${NO_PROXY}
-    network_mode: "host"
-    command: ["node", "repoint-rules.js"]
-EOF
-
 echo "Instalando dependencias para os scripts"
-docker-compose -f docker-compose.finalizer.yml run --rm finalizer npm install
+npm install 
+
 
 echo "Adicionando nós ao contrato NodeRulesV2"
 for i in $(seq 1 $num_boots); do
   pubkey="${bootkeys[$((i-1))]}"
   enodeHigh="0x$(echo $pubkey | cut -c1-64)"
   enodeLow="0x$(echo $pubkey | cut -c65-128)"
-  docker-compose -f docker-compose.finalizer.yml run --rm finalizer node node-rules-v2.js addLocalNode ${enodeHigh} ${enodeLow} Boot boot${i}
+  node node-rules-v2.js addLocalNode ${enodeHigh} ${enodeLow} Boot boot${i}
 done
 for i in $(seq 1 $num_validators); do
   pubkey="${validatorkeys[$((i-1))]}"
   enodeHigh="0x$(echo $pubkey | cut -c1-64)"
   enodeLow="0x$(echo $pubkey | cut -c65-128)"
-  docker-compose -f docker-compose.finalizer.yml run --rm finalizer node node-rules-v2.js addLocalNode ${enodeHigh} ${enodeLow} Validator validator${i}
+  node node-rules-v2.js addLocalNode ${enodeHigh} ${enodeLow} Validator validator${i}
 done
 for i in $(seq 1 $num_writers); do
   pubkey="${writerkeys[$((i-1))]}"
   enodeHigh="0x$(echo $pubkey | cut -c1-64)"
   enodeLow="0x$(echo $pubkey | cut -c65-128)"
-  docker-compose -f docker-compose.finalizer.yml run --rm finalizer node node-rules-v2.js addLocalNode ${enodeHigh} ${enodeLow} Writer writer${i}
+  node node-rules-v2.js addLocalNode ${enodeHigh} ${enodeLow} Writer writer${i}
 done
 
 echo "Reponteirando regras dos contratos Ingress para a GEN02"
-docker-compose -f docker-compose.finalizer.yml run --rm finalizer node util/repoint-rules.js
+node util/repoint-rules.js
 
 fi
 #-------------- Informações dos nós ---------------
