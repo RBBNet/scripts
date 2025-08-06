@@ -153,7 +153,7 @@ if [ "$(echo "$disable_randomize" | tr '[:upper:]' '[:lower:]')" = "sim" ]; then
     else
         echo "Variável BESU_OPTS já existe no arquivo. Opção secp256k1.randomize NÃO está sendo desabilitada"
     fi
-fi
+fi0
 
 cd ..
 
@@ -433,7 +433,7 @@ nvm use --delete-prefix 22
 npm install
 
 echo "Corrigindo o endpoint da rede 'local_besu' no hardhat.config.js..."
-sed -i 's|url: "http://127.0.0.1:8545"|url: "http://validator1:8545"|' hardhat.config.js
+sed -i 's|url: "http://127.0.0.1:8545"|url: "http://localhost:'"${node_port[validator1]}"'"|' hardhat.config.js
 
 echo "Gerando arquivo parameters-toy.json"
 cat > ./deploy/parameters-toy.json << EOF
