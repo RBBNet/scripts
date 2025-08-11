@@ -587,6 +587,17 @@ for i in $(seq 1 $num_writers); do
   printf "${bold}%-12s${normal} =>\tIP: ${blue}%-15s${normal}\tPorta: ${blue}%s${normal}\n" "$node_name" "$ip_address" "$port"
 done
 
+echo
+echo "┌─────────────────────────────────────────────────────────────┐"
+echo "│ Endereços dos smart contracts                               │"
+echo "├─────────────────────────────────────────────────────────────┤"
+echo "│ Admin:                               ${admin_gen01_addr}    │"
+echo "│ AccountRulesV2:               ${accountRules_gen02_addr}    │"
+echo "│ NodeRulesV2:                     ${nodeRules_gen02_addr}    │"
+echo "| OrganizationImpl:                      ${org_gen02_addr}    │"
+echo "| Governance:                            ${gov_gen02_addr}    │"
+echo "└─────────────────────────────────────────────────────────────┘"
+echo
 
 #----------------------------------
 
