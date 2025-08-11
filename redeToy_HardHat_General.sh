@@ -1,4 +1,5 @@
 #!/bin/bash
+# Descrição:  Script implantador de uma rede toy, utilizando o HardHat com ou sem permissionamento e com número de nós dinâmicos (Usuário pode escolhar).
 version="2.1"
 
 set -e
@@ -153,12 +154,17 @@ if [ "$(echo "$disable_randomize" | tr '[:upper:]' '[:lower:]')" = "sim" ]; then
     else
         echo "Variável BESU_OPTS já existe no arquivo. Opção secp256k1.randomize NÃO está sendo desabilitada"
     fi
-fi0
+fi
+
 
 cd ..
 
 mv start-network $projectname
 cd $projectname
+
+
+
+
 
 # Criação dos nós dinamicamente
 nodes=""
@@ -202,6 +208,10 @@ for i in $(seq 1 $num_writers); do
   node_port["writer$i"]=$port  # Armazenando a porta no array node_port
   port_offset=$((port_offset + 1))
 done
+
+
+
+
 
 
 # Geração do genesis com validadores
@@ -335,7 +345,7 @@ docker-compose up -d $nodes_to_start
 if [[ "$permissionamento" == "s" ]]; then
 
 echo
-echo "${background_yellow}${black}${bold} FASE 1: IMPLANTANDO ARQUITETURA GEN01 ${normal}"
+echo "${background_yellow}${black}${bold} FASE 1: IMPLANTANDO GEN01 ${normal}"
 echo
 
 # Garantia de que será usado o node 16
@@ -423,7 +433,7 @@ accountRules_gen01_addr=$(echo "$outputDeployGen01" | grep -E 'with Rules addres
 
 
 echo
-echo "${background_yellow}${black}${bold} FASE 2: IMPLEMENTANDO ARQUITETURA GEN02 (VIA DOCKER) ${normal}"
+echo "${background_yellow}${black}${bold} FASE 2: IMPLEMENTANDO GEN02 ${normal}"
 echo
 
 cd ../gen02
@@ -485,7 +495,7 @@ nodeRules_gen02_addr=$(echo "$outputDeployGen02" | grep 'NodeRulesV2Impl implant
 gov_gen02_addr=$(echo "$outputDeployGen02" | grep 'Governance implantado no endereço' | grep -o '0x[0-9a-fA-F]\{40\}')
 
 echo
-echo "${background_yellow}${black}${bold} FASE 3: FINALIZANDO O UPGRADE PARA GEN02 ${normal}"
+echo "${background_yellow}${black}${bold} FASE 3: FINALIZANDO O UPGRADE PARA GEN02 - PERMISSIONANDO NÓS ${normal}"
 echo
 
 cd ../..
