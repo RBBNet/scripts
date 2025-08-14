@@ -348,10 +348,10 @@ echo
 echo "${background_yellow}${black}${bold} FASE 1: IMPLANTANDO GEN01 ${normal}"
 echo
 
-# Garantia de que será usado o node 16
+# Garantia de que será usado o node 22
 . $NVM_DIR/nvm.sh
-nvm install 16
-nvm use 16
+nvm install 22
+nvm use 22
 npm i --global yarn
 # ---- - - - -
 
@@ -438,8 +438,6 @@ echo
 
 cd ../gen02
 
-nvm install 22
-nvm use --delete-prefix 22
 npm install
 
 echo "Corrigindo o endpoint da rede 'local_besu' no hardhat.config.js..."
