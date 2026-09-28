@@ -13,7 +13,7 @@ npm install
 2. Para rodar o script:
 
 ```Shell
-node node qbft-votes.js <bloco-inicial> [bloco-final]
+node qbft-votes.js <bloco-inicial> [bloco-final]
 ```
 
 Caso o parâmetro `bloco-final` não seja informado, o script buscará votos até o maior bloco produzido no momento do início do script.
